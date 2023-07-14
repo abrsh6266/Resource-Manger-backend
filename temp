@@ -1,0 +1,12 @@
+else if department.Name == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid input"})
+		return
+	}
+else if (string(val))[0:5] == "{\"err" {
+		c.JSON(http.StatusBadRequest, gin.H{"Error": "invalid input"})
+		return
+	}
+else if (string(val)) == "{\"data\":{\"Manager_by_pk\":null}}" {
+		c.JSON(http.StatusBadRequest, gin.H{"Error": "invalid input"})
+		return
+	}
