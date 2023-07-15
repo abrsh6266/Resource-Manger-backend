@@ -1,8 +1,6 @@
 package main
 
 import (
-	"os"
-
 	controller "gilab.com/pragmaticreviews/golang-gin-poc/Controller"
 	"gilab.com/pragmaticreviews/golang-gin-poc/initializer"
 	"gilab.com/pragmaticreviews/golang-gin-poc/middleware"
@@ -33,5 +31,5 @@ func main(){
 	r.POST("/usermat/add",middleware.RequireAuth,controller.AddRelation)
 	r.POST("/usermat/update",middleware.RequireAuth,controller.UpdateRelation)
 	r.POST("/usermat/remove",middleware.RequireAuth,controller.RemoveRelation)
-	r.Run(os.Getenv("PORT"))
+	r.Run()
 }
