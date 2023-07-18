@@ -124,7 +124,7 @@ func Validate(ctx *gin.Context){
 		"message":"I am logged in",
 	})
 }
-func showAll(ctx *gin.Context){
+func ShowAll(ctx *gin.Context){
 	ctx.HTML(http.StatusOK,"index.html",gin.H{
 		"title": "Login",
 		"form": "xoxo",

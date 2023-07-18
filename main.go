@@ -38,7 +38,7 @@ func main(){
 	}
 	viewRoutes := r.Group("/view")
 	{
-		viewRoutes.GET("/userlogin",controller.showAll)
+		viewRoutes.GET("/userlogin",controller.ShowAll)
 	}
 	r.Run()
 }
