@@ -1,0 +1,12 @@
+.box{
+    background-color: red;
+    width: 200px;
+    height: 200px;
+}
+[v-cloak]{
+    display: none;
+}
+input{
+    margin: 10px;
+    display: block;
+}
