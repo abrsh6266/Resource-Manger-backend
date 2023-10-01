@@ -55,37 +55,25 @@ func GetCategories(ctx *gin.Context){
 }
 func AddCategory(c *gin.Context) {
 	body, err := ioutil.ReadAll(c.Request.Body)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to read request body"})
-		return
-	}
-	category := model.Category{}
-	if json.Unmarshal(body, &category); err != nil {
-		fmt.Println(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to parse user data"})
-		return
-	}else if category.Name == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid input"})
-		return
-	}
-	jsonData := map[string]string{
-		"query": fmt.Sprintf(`mutation {
-			insert_Category_one(object: {name: "%s"}) {
-			  id
-			  name
-			}
-		  }`,category.Name),
-	}
-	marshaling,_ := json.Marshal(jsonData)
-	val, err := initializer.HasuraMutationRequest(marshaling)
+	respBody, err := initializer.HasuraRequest(http.MethodPost, string(body))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "something wrong!"})
 		return
-	}else if (string(val))[0:5] == "{\"err" {
-		c.JSON(http.StatusBadRequest, gin.H{"Error": "invalid input"})
+	}else if string(respBody)[:8]=="{\"errors"{
+		c.JSON(http.StatusBadRequest, gin.H{"error": "something wrong!"})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"message": "Successflly added"})
+	var result struct {
+		Data struct {
+			Catigory model.Category `json:"insert_Category_one"`
+		} `json:"data"`
+	}
+	if json.Unmarshal(respBody,&result); err != nil {
+		fmt.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to parse category data"})
+		return
+		}
+	c.JSON(http.StatusOK,result)
 }
 func UpdateCategory(c *gin.Context) {
 	body, err := ioutil.ReadAll(c.Request.Body)

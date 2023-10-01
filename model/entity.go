@@ -1,9 +1,11 @@
 package model
 
 type User struct {
+	Role     string `json:"role"`
 	Name     string `json:"name"`
 	Email    string `json:"email"`
 	Password string `json:"password"`
+	Token    string `json:"token"`
 }
 type Department struct {
 	Name     	 string `json:"name"`
@@ -19,6 +21,7 @@ type Custodian struct {
 	Department 	 string `json:"department"`
 	Email        string `json:"email"`
 	PhoneNumber  string `json:"phoneNumber"`
+	UsedMaterials []MaterialUserRelation `json:"MaterialCustodianRels"`
 	UpdateColumn string `json:"column"`
 	UpdateValue  string `json:"value"`
 }
@@ -34,12 +37,12 @@ type MaterialUserRelation struct {
 	Id       	 int `json:"id"`
 	Amount     	 int `json:"amount"`
 	SerialNumber string `json:"materialsSerialNumber"`
-	Material     Material `json:"Material"`
-	Custodian    Custodian `json:"Custodian"`
+	Materials     Material `json:"Material"`
+	Custodians    Custodian `json:"Custodian"`
 }
 type Material struct {
 	Name     	 string `json:"name"`
-	Id       	 int `json:"id"`
+	Id       	 int `json:"Id"`
 	SerialNumber string `json:"serialNumber"`
 	Owner        string `json:"owner"`
 	Model 	     string `json:"model"`
@@ -50,7 +53,5 @@ type Material struct {
 	Type         string `json:"type"`
 	Total     	 int    `json:"total"`
 	Taken     	 int    `json:"taken"`
-	UpdateColumn string `json:"column"`
-	UpdateValue  string `json:"value"`
 	MaterialUserRelations []MaterialUserRelation `json:"MaterialCustodianRels"`
 }

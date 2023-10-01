@@ -12,25 +12,11 @@ import (
 )
 
 func GetDepartments(ctx *gin.Context){
-	jsonData := map[string]string{
-		"query": `{
-			Department {
-			  id
-			  location
-			  name
-			  Custodians {
-				name
-				id
-				phoneNumber
-				email
-			  }
-			}
-		  }`}
-	marshaling,_ := json.Marshal(jsonData)
-	respBody, err := initializer.HasuraRequest(http.MethodPost, string(marshaling))
+	body, err := ioutil.ReadAll(ctx.Request.Body)
+	respBody, err := initializer.HasuraRequest(http.MethodPost, string(body))
 	if err != nil {
 		fmt.Println(err)
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Incorrect Email"})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "some sort of error"})
 		return
 	}
 	var result struct {
@@ -43,108 +29,75 @@ func GetDepartments(ctx *gin.Context){
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to parse user data"})
 		return
 	}
-	ctx.JSON(http.StatusOK,gin.H{"message":result.Data.Departments})
+	ctx.JSON(http.StatusOK,result)
 }
 func AddDepatment(c *gin.Context) {
 	body, err := ioutil.ReadAll(c.Request.Body)
+	respBody, err := initializer.HasuraRequest(http.MethodPost, string(body))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to read request body"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "something wrong!"})
+		return
+	}else if string(respBody)[:8]=="{\"errors"{
+		c.JSON(http.StatusBadRequest, gin.H{"error": "something wrong!"})
 		return
 	}
-	department := model.Department{}
-	if json.Unmarshal(body, &department); err != nil {
+	var result struct {
+		Data struct {
+			Materials []model.Material `json:"insert_Material_one"`
+		} `json:"data"`
+	}
+	if json.Unmarshal(respBody,&result); err != nil {
 		fmt.Println(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to parse user data"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to parse category data"})
 		return
-	}else if department.Name == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid input"})
-		return
-	}
-	jsonData := map[string]string{
-		"query": fmt.Sprintf(`mutation {
-			insert_Department_one(object: {location: "%s", name: "%s"}) {
-			  id
-			  location
-			  name
-			}
-		  }`,department.Location,department.Name),
-	}
-	marshaling,_ := json.Marshal(jsonData)
-	val, err := initializer.HasuraMutationRequest(marshaling)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
-		return
-	} else if (string(val))[0:5] == "{\"err" {
-		c.JSON(http.StatusBadRequest, gin.H{"Error": "invalid input"})
-		return
-	}
-	c.JSON(http.StatusOK, gin.H{"message": "successfully added"})
+		}
+	c.JSON(http.StatusOK,result)
 }
-func RemoveDepatment(c *gin.Context) {
+func RemoveDepartment(c *gin.Context) {
 	body, err := ioutil.ReadAll(c.Request.Body)
+	respBody, err := initializer.HasuraRequest(http.MethodPost, string(body))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to read request body"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "something wrong!"})
+		return
+	}else if string(respBody)[:8]=="{\"errors"{
+		c.JSON(http.StatusBadRequest, gin.H{"error": "something wrong!"})
 		return
 	}
-	department := model.Department{}
-	if json.Unmarshal(body, &department); err != nil {
+	var result struct {
+		Data struct {
+			DeletedMaterial struct{
+				AffectedRows int  `json:"affected_rows"`
+			} `json:"delete_Department"`
+		} `json:"data"`
+	}
+	if json.Unmarshal(respBody,&result); err != nil {
 		fmt.Println(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to parse user data"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to parse data"})
 		return
-	}
-	jsonData := map[string]string{
-		"query": fmt.Sprintf(`mutation {
-			delete_Department(where: {name: {_eq: "%s"}}) {
-			  returning {
-				id
-				location
-				name
-			  }
-			}
-		  }`,department.Name),
-	}
-	marshaling,_ := json.Marshal(jsonData)
-	val, err := initializer.HasuraMutationRequest(marshaling)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
-		return
-	} else if (string(val)) == "{\"data\":{\"delete_Department\":{\"returning\" : []}}}" {
-		c.JSON(http.StatusInternalServerError, gin.H{"Error": string(val)})
-		return
-	}
-	c.JSON(http.StatusOK, gin.H{"message": string(val)})
+		}
+	c.JSON(http.StatusOK,result)
 }
 func UpdateDepatment(c *gin.Context) {
 	body, err := ioutil.ReadAll(c.Request.Body)
+	respBody, err := initializer.HasuraRequest(http.MethodPost, string(body))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to read request body"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "something wrong!"})
+		return
+	}else if string(respBody)[:8]=="{\"errors"{
+		c.JSON(http.StatusBadRequest, gin.H{"error": "something wrong!"})
 		return
 	}
-	department := model.Department{}
-	if json.Unmarshal(body, &department); err != nil {
+	var result struct {
+		Data struct {
+			UpdatedDepartment struct{
+				AffectedRows int  `json:"affected_rows"`
+			} `json:"update_Department"`
+		} `json:"data"`
+	}
+	if json.Unmarshal(respBody,&result); err != nil {
 		fmt.Println(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to parse user data"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to parse category data"})
 		return
-	}
-	jsonData := map[string]string{
-		"query": fmt.Sprintf(`mutation {
-			update_Department(where: {name: {_eq: "%s"}}, _set: {%s: "%s"}) {
-			  returning {
-				id
-				location
-				name
-			  }
-			}
-		  }`,department.Name,department.UpdateColumn,department.UpdateValue),
-	}	
-	marshaling2,_ := json.Marshal(jsonData)
-	val,err := initializer.HasuraMutationRequest(marshaling2)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
-		return
-	}else if string(val)=="{\"data\":{\"update_Department\":{\"returning\" : []}}}"{
-		c.JSON(http.StatusBadRequest,gin.H{"error":"department not found"})
-		return
-	}
-	c.JSON(http.StatusOK, gin.H{"message": "Successfully updated"})
+		}
+		c.JSON(http.StatusOK,result)
 }

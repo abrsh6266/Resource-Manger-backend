@@ -14,7 +14,7 @@ func HasuraRequest(method, query string) ([]byte, error) {
 		return nil, err
 	}
 	req.Header.Add("Content-Type", "application/json")
-	req.Header.Add("X-Hasura-Admin-Secret", os.Getenv("HASURAADINSECRET"))
+	req.Header.Add("X-Hasura-Admin-Secret", os.Getenv("HASURAADMINSECRET"))
 	res, err := client.Do(req)
 	if err != nil {
 		return nil, err

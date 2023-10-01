@@ -10,8 +10,7 @@ import (
 	"gilab.com/pragmaticreviews/golang-gin-poc/model"
 	"github.com/gin-gonic/gin"
 )
-
-func GetMaterials(ctx *gin.Context){
+func GetServices(ctx *gin.Context){
 	body, err := ioutil.ReadAll(ctx.Request.Body)
 	respBody, err := initializer.HasuraRequest(http.MethodPost, string(body))
 	if err != nil {
@@ -21,8 +20,10 @@ func GetMaterials(ctx *gin.Context){
 	}
 	var result struct {
 		Data struct {
-			Materials []model.Material `json:"Material"`
-			Categories   []model.Category `json:"Category"`
+			Materials  	 []model.Material `json:"Material"`
+			Departments  []model.Department `json:"Department"`
+			Relations    []model.MaterialUserRelation `json:"materialCustodianRel"`
+			Custodians   []model.Custodian `json:"Custodian"`
 		} `json:"data"`
 	}
 	if json.Unmarshal(respBody,&result); err != nil {
@@ -32,7 +33,7 @@ func GetMaterials(ctx *gin.Context){
 		}
 	ctx.JSON(http.StatusOK,result)
 }
-func AddMaterial(c *gin.Context) {
+func AddCustodian(c *gin.Context) {
 	body, err := ioutil.ReadAll(c.Request.Body)
 	respBody, err := initializer.HasuraRequest(http.MethodPost, string(body))
 	if err != nil {
@@ -44,42 +45,17 @@ func AddMaterial(c *gin.Context) {
 	}
 	var result struct {
 		Data struct {
-			Materials []model.Material `json:"insert_Material_one"`
+			Materials []model.Material `json:"insert_Custodian_one"`
 		} `json:"data"`
 	}
 	if json.Unmarshal(respBody,&result); err != nil {
 		fmt.Println(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to parse category data"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to parse Custodian data"})
 		return
 		}
 	c.JSON(http.StatusOK,result)
 }
-func UpdateMaterial(c *gin.Context) {
-	body, err := ioutil.ReadAll(c.Request.Body)
-	respBody, err := initializer.HasuraRequest(http.MethodPost, string(body))
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "something wrong!"})
-		return
-	}else if string(respBody)[:8]=="{\"errors"{
-		c.JSON(http.StatusBadRequest, gin.H{"error": "something wrong!"})
-		return
-	}
-	var result struct {
-		Data struct {
-			UpdatedMaterial struct{
-				AffectedRows int  `json:"affected_rows"`
-			} `json:"update_Material"`
-		} `json:"data"`
-	}
-	if json.Unmarshal(respBody,&result); err != nil {
-		fmt.Println(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to parse category data"})
-		return
-		}
-		fmt.Println(result.Data.UpdatedMaterial.AffectedRows)
-		c.JSON(http.StatusOK,result)
-}
-func RemoveMaterial(c *gin.Context) {
+func RemoveCustodian(c *gin.Context) {
 	body, err := ioutil.ReadAll(c.Request.Body)
 	respBody, err := initializer.HasuraRequest(http.MethodPost, string(body))
 	if err != nil {
@@ -93,14 +69,38 @@ func RemoveMaterial(c *gin.Context) {
 		Data struct {
 			DeletedMaterial struct{
 				AffectedRows int  `json:"affected_rows"`
-			} `json:"delete_Material"`
+			} `json:"delete_Custodian"`
 		} `json:"data"`
 	}
 	if json.Unmarshal(respBody,&result); err != nil {
 		fmt.Println(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to parse category data"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to parse data"})
 		return
 		}
-	fmt.Println(result.Data.DeletedMaterial.AffectedRows)
 	c.JSON(http.StatusOK,result)
+}
+func UpdateCustodian(c *gin.Context) {
+	body, err := ioutil.ReadAll(c.Request.Body)
+	respBody, err := initializer.HasuraRequest(http.MethodPost, string(body))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "something wrong!"})
+		return
+	}else if string(respBody)[:8]=="{\"errors"{
+		c.JSON(http.StatusBadRequest, gin.H{"error": "something wrong!"})
+		return
+	}
+	var result struct {
+		Data struct {
+			UpdatedMaterial struct{
+				AffectedRows int  `json:"affected_rows"`
+			} `json:"update_Custodian"`
+		} `json:"data"`
+	}
+	if json.Unmarshal(respBody,&result); err != nil {
+		fmt.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to parse Custodian data"})
+		return
+		}
+		fmt.Println(result.Data.UpdatedMaterial.AffectedRows)
+		c.JSON(http.StatusOK,result)
 }
