@@ -28,7 +28,7 @@ func GetServices(ctx *gin.Context){
 	}
 	if json.Unmarshal(respBody,&result); err != nil {
 		fmt.Println(err)
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to parse category data"})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to parse Service data"})
 		return
 		}
 	ctx.JSON(http.StatusOK,result)
