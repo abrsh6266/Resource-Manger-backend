@@ -1,7 +1,9 @@
 package controller
+
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
 
@@ -9,7 +11,26 @@ import (
 	"gilab.com/pragmaticreviews/golang-gin-poc/model"
 	"github.com/gin-gonic/gin"
 )
-
+func GetCategory(ctx *gin.Context){
+	body, err := io.ReadAll(ctx.Request.Body)
+	respBody, err := initializer.HasuraRequest(http.MethodPost, string(body))
+	if err != nil {
+		fmt.Println(err)
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "some sort of error"})
+		return
+	}
+	var result struct {
+		Data struct {
+			Category []model.Category `json:"Category"`
+		} `json:"data"`
+	}
+	if json.Unmarshal(respBody,&result); err != nil {
+		fmt.Println(err)
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to parse user data"})
+		return
+	}
+	ctx.JSON(http.StatusOK,result)
+}
 func GetCategories(ctx *gin.Context){
 	jsonData := map[string]string{
 		"query": `{
@@ -26,6 +47,8 @@ func GetCategories(ctx *gin.Context){
 				processor
 				scanType
 				serialNumber
+				ram
+				storage
 				taken
 				total
 				type

@@ -1,6 +1,7 @@
 package model
 
 type User struct {
+	Id       int    `json:"id"`
 	Role     string `json:"role"`
 	Name     string `json:"name"`
 	Email    string `json:"email"`
@@ -48,6 +49,8 @@ type Material struct {
 	Model 	     string `json:"model"`
 	Processor 	 string `json:"processor"`
 	DiskType   	 string `json:"diskType"`
+	Storage  	 string `json:"storage"`
+	Ram		  	 string `json:"ram"`
 	ScanType   	 string `json:"scanType"`
 	NetworkType  string `json:"networkType"`
 	Type         string `json:"type"`

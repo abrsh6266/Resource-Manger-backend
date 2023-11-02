@@ -3,6 +3,7 @@ package controller
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
 
@@ -12,7 +13,7 @@ import (
 )
 
 func GetMaterials(ctx *gin.Context){
-	body, err := ioutil.ReadAll(ctx.Request.Body)
+	body, err := io.ReadAll(ctx.Request.Body)
 	respBody, err := initializer.HasuraRequest(http.MethodPost, string(body))
 	if err != nil {
 		fmt.Println(err)

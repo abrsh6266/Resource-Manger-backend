@@ -3,6 +3,7 @@ package controller
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
 
@@ -56,7 +57,7 @@ func AddCustodian(c *gin.Context) {
 	c.JSON(http.StatusOK,result)
 }
 func RemoveCustodian(c *gin.Context) {
-	body, err := ioutil.ReadAll(c.Request.Body)
+	body, err := io.ReadAll(c.Request.Body)
 	respBody, err := initializer.HasuraRequest(http.MethodPost, string(body))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "something wrong!"})

@@ -28,6 +28,8 @@ func SetupRouter() *gin.Engine {
     protected := r.Group("/api")
     protected.Use(middleware.JWTMiddleware())
     {
+		protected.POST("/managers",controller.GetMangers)
+		protected.POST("/report",controller.GetCategory)
 		protected.POST("/department/get",controller.GetDepartments)
 		protected.POST("/department/add",controller.AddDepatment)
 		protected.POST("/department/remove",controller.RemoveDepartment)
